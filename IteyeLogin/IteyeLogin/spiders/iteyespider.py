@@ -11,6 +11,13 @@ class IteyeSpider(Spider):
 	login_page ="http://www.iteye.com/login"
 	start_urls = ["http://kevinflynn.iteye.com/",
                   "http://kevinflynn.iteye.com/blog/2281218"]
+
+	headers={
+		"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+		"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36",
+		"Upgrade-Insecure-Requests":"1",
+		"Referer":"http://www.iteye.com/login",
+	}
 	
 	def start_requests(self):
 		return [Request(self.login_page,callback=self.post_login)]
@@ -23,7 +30,7 @@ class IteyeSpider(Spider):
                                               'name':'kevinflynn',
                                               'password':'maoshan2011215858',
                                               'button':'登　录',
-                                          },
+                                          },headers=self.headers,
                                           callback=self.logged_in)]
 
 	def logged_in(self,response):
@@ -40,23 +47,21 @@ class IteyeSpider(Spider):
                 sel=Selector(response)
                 authenticity_token=sel.xpath("//*[@name='authenticity_token']/@value").extract_first()
                 current_url=response.url
-                print type(current_url)
-                print current_url.index("blog")
                 blog_id= current_url[current_url.index("blog")+5:]
-                commit_url="http://gaojingsong.iteye.com/blog/create_comment/"+str(blog_id)
-                commit_content="写的很好，学习了，谢谢大神的分享!!!!"
+		blog_pre_url=current_url[0:current_url.index("blog")]+"blog"
+                commit_url=blog_pre_url+"/create_comment/"+str(blog_id)
+                commit_content="点赞，点赞，点赞，点赞!!!!"
                 formdata={"comment[body]":commit_content,"commit":"提交","_":"","authenticity_token":authenticity_token}
                 yield FormRequest(url=commit_url,formdata=formdata,callback=self.parse_commit,dont_filter=True)
 
 
 
 	def get_page(self, response):
-    	#	print response.body
 		sel=Selector(response)
 		titles=sel.xpath('//h3/a/text()').extract()
 		for title in titles:
 			print title
-                yield Request(url="http://gaojingsong.iteye.com/blog/2390198",callback=self.post_commit)
+        #        yield Request(url="http://gaojingsong.iteye.com/blog/2390198",callback=self.post_commit)
 
         def post_commit(self,response):
             sel=Selector(response)
