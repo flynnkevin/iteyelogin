@@ -31,11 +31,11 @@ class IteyeSpider(Spider):
                                               'password':'',
                                               'button':'登　录',
                                           },headers=self.headers,
-                                          callback=self.logged_in)]
+                                          callback=self.logged_in,dont_filter=True)]
 
 	def logged_in(self,response):
-	#	return [Request(self.start_urls[0],self.get_page)]
-                yield Request(url="http://www.iteye.com/blogs",callback=self.parse_blog_list)
+		return [Request(self.start_urls[0],self.get_page)]
+        #        yield Request(url="http://www.iteye.com/blogs",callback=self.parse_blog_list)
 
         def parse_blog_list(self,response):
                 sel=Selector(response)
@@ -61,7 +61,7 @@ class IteyeSpider(Spider):
 		titles=sel.xpath('//h3/a/text()').extract()
 		for title in titles:
 			print title
-        #        yield Request(url="http://gaojingsong.iteye.com/blog/2390198",callback=self.post_commit)
+                yield Request(url="http://gaojingsong.iteye.com/blog/2390198",callback=self.post_commit)
 
         def post_commit(self,response):
             sel=Selector(response)
