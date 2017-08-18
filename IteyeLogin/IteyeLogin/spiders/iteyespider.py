@@ -28,7 +28,7 @@ class IteyeSpider(Spider):
                                           formdata={
                                               'authenticity_token':authenticity_token,
                                               'name':'kevinflynn',
-                                              'password':'maoshan2011215858',
+                                              'password':'',
                                               'button':'登　录',
                                           },headers=self.headers,
                                           callback=self.logged_in)]
