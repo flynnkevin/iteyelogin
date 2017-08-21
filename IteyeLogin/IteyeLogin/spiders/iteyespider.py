@@ -27,14 +27,15 @@ class IteyeSpider(Spider):
 		return [FormRequest.from_response(response,
                                           formdata={
                                               'authenticity_token':authenticity_token,
-                                              'name':'kevinflynn',
-                                              'password':'',
+                                              'name':'yangzl',
+                                              'password':'nicai@123',
                                               'button':'登　录',
                                           },headers=self.headers,
                                           callback=self.logged_in,dont_filter=True)]
 
 	def logged_in(self,response):
-		return [Request(self.start_urls[0],self.get_page)]
+	#	return [Request(self.start_urls[0],self.get_page)]
+		return [Request(url="http://zhoumeng87.iteye.com/blog/2390493",callback=self.post_commit)]
         #        yield Request(url="http://www.iteye.com/blogs",callback=self.parse_blog_list)
 
         def parse_blog_list(self,response):
@@ -66,10 +67,11 @@ class IteyeSpider(Spider):
         def post_commit(self,response):
             sel=Selector(response)
             authenticity_token=sel.xpath("//*[@name='authenticity_token']/@value").extract_first()
-            commit_url="http://gaojingsong.iteye.com/blog/create_comment/2390198"
+	    print authenticity_token
+            commit_url="http://zhoumeng87.iteye.com/blog/create_comment/2390493"
 
-            formdata={"comment[body]":"可以，很不错，很不错，点赞！！！","commit":"提交","_":"","authenticity_token":authenticity_token}
-            yield FormRequest(url=commit_url,formdata=formdata,callback=self.parse_commit,dont_filter=False)
+            formdata={"comment[body]":"可以，点赞，很不错，很不错，点赞！！！","commit":"提交","_":"","authenticity_token":authenticity_token}
+            yield FormRequest(url=commit_url,formdata=formdata,callback=self.parse_commit,dont_filter=True)
 
         def parse_commit(self,response):
             pass
